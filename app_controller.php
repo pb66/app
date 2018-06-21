@@ -117,7 +117,7 @@ function app_controller()
             // Include the collapsible sidebar if user is logged in (displayed open by default if window size big enough)
             if ($session['write']) $result .= view("Modules/app/sidebar.php",array("applist"=>$applist));
             
-            // Load the app's page (apps/$app.php) if app name is known passing $name, £config and $apikey
+            // Load the app's page (apps/$app.php) if app name is known passing the app's $name and $config (and the $apikey)
             if ($userappname!=false) {                                   
                 if (!file_exists("Modules/app/apps/$app.php")) $app = "blank"; // fallback to "blank.php" if app's file not found
                 $result .= view("Modules/app/apps/$app.php",array("name"=>$userappname, "config"=>$config, "apikey"=>$apikey));
