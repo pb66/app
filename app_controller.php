@@ -102,28 +102,33 @@ function app_controller()
             
             if (!isset($applist->$userappname)) {                        // if requested app is NOT in the users list of apps
                 foreach ($applist as $key=>$val) { $userappname = $key; break; }
-            }                                                            // JUST USE THE FIRST APP NAME IN THE LIST ???
+            }                                                            // JUST USE THE FIRST APP NAME IN THE LIST (IF THERE IS ONE) ???
             
             $route->format = "html";
-            if ($userappname!=false) {
-                $app = $applist->$userappname->app;
-                $config = $applist->$userappname->config;
+            if ($userappname!=false) {                                   // If the user has a pre-existing app to load
+                $app = $applist->$userappname->app;                      // Get the type of app from the applist using the app name
+                $config = $applist->$userappname->config;                // Get the existing configuration for the app by name
             }
             
+            // Construct the webpage to be returned starting with a link to "app/css/pagenav.css" stylesheet
             $result = "<link href='".$path."Modules/app/css/pagenav.css?v=1' rel='stylesheet'>";
-            $result .= "<div id='wrapper'>";
+            $result .= "<div id='wrapper'>";                             // to that add opening the main "wrapper" div
+            
+            // Include the collapsible sidebar if user is logged in (displayed open by default if window size big enough)
             if ($session['write']) $result .= view("Modules/app/sidebar.php",array("applist"=>$applist));
-            if ($userappname!=false) {
-                if (!file_exists("Modules/app/apps/$app.php")) $app = "blank";
+            
+            // Load the app's page (apps/$app.php) if app name is known passing $name, £config and $apikey
+            if ($userappname!=false) {                                   
+                if (!file_exists("Modules/app/apps/$app.php")) $app = "blank"; // fallback to "blank.php" if app's file not found
                 $result .= view("Modules/app/apps/$app.php",array("name"=>$userappname, "config"=>$config, "apikey"=>$apikey));
-            } else {
+            } else {   // if app name not known (eg no pre-existing apps - new user) just list available type templates
                 $result .= view("Modules/app/list_view.php",array("available_apps"=>$available_apps));
             }
-            $result .= "</div>";
+            $result .= "</div>";                                         // close the "wrapper" div
         }
     }
 
-    global $fullwidth;
+    global $fullwidth;                                                   
     $fullwidth = true;
     return array('content'=>$result, 'fullwidth'=>true);
 }
