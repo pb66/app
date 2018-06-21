@@ -72,36 +72,37 @@ function app_controller()
     }
     // ------------------------------------------------------------------------------------
     // APP LOAD
+    // For general viewing and loading etc, this is where it pretty much starts
     // ------------------------------------------------------------------------------------
     
     else if ($route->action == "view") {
     
         // enable apikey read access
         $userid = false;
-        if (isset($session['write']) && $session['write']) {
-            $userid = $session['userid'];
-            $apikey = $user->get_apikey_write($session['userid']);
+        if (isset($session['write']) && $session['write']) {             // Check for an existing logged in session
+            $userid = $session['userid'];                                // Get a userid from the session data
+            $apikey = $user->get_apikey_write($session['userid']);       // Get apikey from userid for app to make api calls 
         } else if (isset($_GET['readkey'])) {
-            $apikey = $_GET['readkey'];
-            $userid = $user->get_id_from_apikey($apikey);
+            $apikey = $_GET['readkey'];                                  // Otherwise use a supplied "readkey" as apikey
+            $userid = $user->get_id_from_apikey($apikey);                // and get the userid from that
         } else if (isset($_GET['apikey'])) {
-            $apikey = $_GET['apikey'];
-            $userid = $user->get_id_from_apikey($apikey);
+            $apikey = $_GET['apikey'];                                   // or if an "apikey" is provided in the url
+            $userid = $user->get_id_from_apikey($apikey);                // use that
         }
         
-        if ($userid)
+        if ($userid)                                                     // In other words "if valid session or apikey" was found
         {
-            $applist = $appconfig->applist($userid);
+            $applist = $appconfig->applist($userid);                     // get a list of that users existing apps
             
-            if ($route->subaction) {
-                $userappname = $route->subaction;
+            if ($route->subaction) {                                     // get the app name from the url
+                $userappname = $route->subaction;                        // either from a subaction
             } else {
-                $userappname = get("name");
+                $userappname = get("name");                              // or passed using "name="
             }
             
-            if (!isset($applist->$userappname)) {
+            if (!isset($applist->$userappname)) {                        // if requested app is NOT in the users list of apps
                 foreach ($applist as $key=>$val) { $userappname = $key; break; }
-            }
+            }                                                            // JUST USE THE FIRST APP NAME IN THE LIST ???
             
             $route->format = "html";
             if ($userappname!=false) {
