@@ -130,6 +130,6 @@ function app_controller()
 
     global $fullwidth;                                                   
     $fullwidth = true;
-    return array('content'=>$result, 'fullwidth'=>true);
+    return array('content'=>$result, 'fullwidth'=>true);                 // return that page content
 }
 
